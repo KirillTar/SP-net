@@ -153,12 +153,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="find_seed.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Plots.cpp" />
     <ClCompile Include="Substitution.cpp" />
     <ClCompile Include="Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FInd_seed.hpp" />
     <ClInclude Include="Plots.hpp" />
     <ClInclude Include="Substitution.hpp" />
     <ClInclude Include="Tests.hpp" />

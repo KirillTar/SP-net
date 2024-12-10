@@ -124,3 +124,15 @@ std::vector<double> histogramm_test(const std::vector<uchar>& data) {
 
 // ******************   histogramm end   ******************
 
+
+// ******************   histogramm (w step 10) ***********************
+
+std::vector<double> histogramm_test_10(const std::vector<uchar>& data) {
+    std::vector<double> vec(26, 0);
+    for (auto num : data) {
+        vec[num / 10]++;
+    }
+    return vec;
+}
+
+// ******************   histogramm end (w step 10) ******************

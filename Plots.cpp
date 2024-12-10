@@ -15,6 +15,12 @@ namespace plt {
 	SDL_Window* h_win;
 	SDL_Renderer* h_ren;
 
+	constexpr static int hd_w = 570;
+	constexpr static int hd_h = 240;
+
+	SDL_Window* hd_win;
+	SDL_Renderer* hd_ren;
+
 	constexpr static int a_w = 400;
 	constexpr static int a_h = 400;
 	SDL_Window* a_win;
@@ -31,6 +37,8 @@ namespace plt {
 		font = TTF_OpenFont("sample.ttf", 15);
 		h_win = SDL_CreateWindow("histogramm", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, h_w, h_h, SDL_WINDOW_ALLOW_HIGHDPI);
 		h_ren = SDL_CreateRenderer(h_win, -1, SDL_RENDERER_ACCELERATED);
+		hd_win = SDL_CreateWindow("histogramm_10", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, hd_w, hd_h, SDL_WINDOW_ALLOW_HIGHDPI);
+		hd_ren = SDL_CreateRenderer(hd_win, -1, SDL_RENDERER_ACCELERATED);
 		a_win = SDL_CreateWindow("autocorrelation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, a_w, a_h, SDL_WINDOW_ALLOW_HIGHDPI);
 		a_ren = SDL_CreateRenderer(a_win, -1, SDL_RENDERER_ACCELERATED);
 		l_win = SDL_CreateWindow("lattice", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, l_w, l_h, SDL_WINDOW_ALLOW_HIGHDPI);
@@ -132,6 +140,53 @@ namespace plt {
 		SDL_RenderPresent(h_ren);
 	}
 
+	void histogramm_step_10(std::vector<uchar>& data) {
+
+		std::vector<double> vec = histogramm_test_10(data);
+
+		int max = 0;
+		for (auto num : vec) {
+			if (num > max)
+				max = num;
+		}
+
+		SDL_SetRenderDrawColor(hd_ren, 255, 255, 255, 255);
+		SDL_RenderClear(hd_ren);
+
+		int x_offset = 40;
+		int y_offset = 20;
+
+		SDL_SetRenderDrawColor(hd_ren, 0, 0, 0, 255);
+		SDL_RenderDrawLine(hd_ren, x_offset, y_offset, x_offset, hd_h - y_offset);
+		SDL_RenderDrawLine(hd_ren, x_offset, hd_h - y_offset, hd_w - x_offset, hd_h - y_offset);
+
+		int j = 0;
+		for (int i = hd_h - y_offset; i >= y_offset; i -= (hd_h - 2 * y_offset) / 10) {
+			draw_value(hd_ren, j * (max / 10), x_offset - 20, i);
+			j++;
+		}
+
+		j = 0;
+		for (int i = x_offset; i <= hd_w - x_offset; i += (hd_w - 2 * x_offset) / 10) {
+			draw_value(hd_ren, j * (255 / 10), i, hd_h - y_offset + 10);
+			j++;
+		}
+
+		SDL_SetRenderDrawColor(hd_ren, 255, 0, 0, 255);
+		j = 0;
+		for (double i = x_offset + 1; i <= hd_w - x_offset + 1; i += (hd_w - 2 * x_offset) / 25) {
+			double length = hd_h - y_offset - (hd_h - 2 * y_offset) * (vec[j] / max);
+			SDL_Rect rect = {i, length, 15, hd_h - length - y_offset + 1};
+			SDL_SetRenderDrawColor(hd_ren, 0, 0, 0, 255);
+			SDL_RenderDrawRect(hd_ren, &rect);
+			SDL_SetRenderDrawColor(hd_ren, 255, 0, 0, 255);
+			SDL_RenderFillRect(hd_ren, &rect);
+			j++;
+		}
+
+		SDL_RenderPresent(hd_ren);
+	}
+
 	void autocorrelation(std::vector<uchar>& data, uchar_iter begin_idx, uchar_iter end_idx) {
 		std::vector<double> vec = autocorrelation_test(data);
 
@@ -155,8 +210,8 @@ namespace plt {
 		float distance = end_idx - begin_idx;
 		j = 0;
 
-		for (int i = x_offset; i <= a_w - x_offset; i += (a_w - 2 * x_offset) / 10) {
-			draw_value(a_ren, j * (distance / 10) + start, i, a_h - y_offset + 65);
+		for (int i = x_offset; i <= a_w - x_offset; i += (a_w - 2 * x_offset) / 5) {
+			draw_value(a_ren, j * (distance / 5) + start, i, a_h - y_offset + 65);
 			j++;
 		}
 
